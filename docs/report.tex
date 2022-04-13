@@ -1,0 +1,246 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{lscape}
+\usepackage{colortbl}
+% \usepackage{titlesec}
+% \usepackage{indentfirst}
+
+\parindent 0pt
+\parskip 2ex % paragraph spacing
+
+\hypersetup{
+    colorlinks,
+    citecolor=red,
+    filecolor=green,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=1mm,
+  belowskip=0mm,
+  backgroundcolor=\color{black!5},
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle=\footnotesize,
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\renewcommand\lstlistingname{Code Block}
+
+\title{Controller for Modified SPEX 1000M Monochromater User Manual}
+\author{Mit Bailey}
+\date{13 April 2022}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{2}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+% \setcounter{section}{0}
+\section{Getting Started} \label{section:gettingstarted}
+
+\subsubsection{Running Without Installing}
+Open Terminal and navigate to the \verb|SpectroController| program directory. Run \verb|make| if the file "controller.out" is not present. The file "controller.out" should now exist in the \verb|SpectroController| directory.
+
+\subsubsection{Installing (Optional)}
+Optionally, the user may want to install the program. This can be done by executing \verb|make install| in the \verb|SpectroController| directory.
+
+
+\section{Starting the Program} \label{section:startingtheprogram}
+
+The program may be started in one of three possible conditions, listed below. It is \emph{very important} to note into which of these conditions the program is being booted. Only once the boot condition is considered, the program can be run by executing the command \verb|./controller.out| in the program directory, or by executing the command \verb|controller| anywhere if the program has been installed.
+
+\subsubsection{Boot Condition 1: First Time Start} \label{subsubsection:bootcon1}
+\begin{quote}
+    The program is being started for the first time. In this state, the program does not know the current absolute position of the counter and will ask the user to provide this information via the statement:
+    
+    \emph{“Current position not known, please enter current counter readout (must be in X.XX format):”}
+    
+    Please be sure to do so accurately.
+\end{quote}
+
+\subsubsection{Boot Condition 2: After Ungraceful Exit} \label{subsubsection:bootcon2}
+\begin{quote}
+    The program is being started after an error or crash has occurred. Whatever the reason, it is important to note that the program’s knowledge of the counter position is invalidated on a crash. Therefore, the file which holds position data, `posinfo.bin`, must be deleted. The program can then be started as if in Condition 1: First Time Start.
+\end{quote}
+
+\subsubsection{Boot Condition 3: Normal Start} \label{subsubsection:bootcon3}
+\begin{quote} 
+    A routine startup of the program after a graceful exit and after having been through \nameref{subsubsection:bootcon1}. The program requires no special action.
+\end{quote}
+
+\section{Ungraceful Exits and Crashes} \label{section:ungracefulexitsandcrashes}
+
+If the program crashes, it is important to note that the absolute position is invalidated. Therefore, the user must reference the section \nameref{section:startingtheprogram} subsection \nameref{subsubsection:bootcon2} for information on how to proceed, and be sure to delete the \verb|posinfo.bin| file.
+
+\section{Graphical User Interface} \label{section:interface}
+
+The user interface is split horizontally into two sections: a top section, Status, and a bottom section, Options.
+
+\subsection{Status} \label{subsection:status}
+
+The first section, Status, is located at the top half of the screen and shows the current state of the instrument and user-entered values. This area is further split in half horizontally by a dashed (\verb|----|) line. The upper area displays values pertaining to the current physical state of the instrument, while the bottom area shows the current values which will be used during the next command.
+
+\subsubsection{Top Area (Current Instrument State)} \label{subsubsection:statustoparea}
+
+``\verb|Input :|'' shows which port the instrument input is set to, and may display ``\verb|PORT A|'', ``\verb|PORT B|'', or ``\verb|Moving|''. When moving is displayed, the text ``\verb|Info: IO Ports are changing. Operations disabled.|'' will appear at the bottom of the screen. This occurs when the instrument is switching between selected ports. User interaction is disabled until the switching is finished.
+
+``\verb|Output:|'' shows which port the instrument output is set to, and may display ``\verb|PORT A|'', ``\verb|PORT B|'', or ``\verb|Moving|''.
+
+``\verb|Scan|'' shows if the instrument is busy moving, and will display ``\verb|Ready|'' when still and ready to move and ``\verb|Scanning|'' when moving and busy.
+
+``\verb|Current|'' shows the instrument's current position. It displays the position from top to bottom as an absolute integer value from 0 to 65535 (called steps), as a fractional decimal matching the expected on-instrument counter readout (called counter-steps), and as a wavelength from 0 nanometers to 1500 nanometers. These values are updated as the position changes.
+
+Note: 1 counter-step = 2 nanometers = 250 steps
+
+``\verb|Target|'' shows the instrument's target position, position it is currently moving to, in the same units and manner as ``\verb|Current|'' (see above).
+
+\subsubsection{Bottom Area (Queued Command Values)} \label{subsubsection:statusbottomarea}
+
+``\verb|Start|'' displays the position, in nanometers, the next scan will begin at. If not already here, the instrument will move here before beginning the scan.
+
+``\verb|Stop|'' displays the position, in nanometers, the next scan will end at.
+
+``\verb|Step|'' displays the step size, in nanometers, the next scan will use. When scanning, the instrument will move in increments of this size.
+
+``\verb|Dwell|'' displays the amount of time, in seconds, the instrument will pause movement after each step during a scan.
+
+``\verb|Pulse|'' displays the length, in milliseconds, of the output pulse sent through the input-output trigger, a DB9 connector labeled as \verb|TRIG I/O| on the device itself (see: \nameref{section:externalinterfaces}).
+
+\subsection{Options} \label{subsection:options}
+
+The second section of the graphical user interface, labeled ``\verb|Options|'', contains the menus and fields the user can directly interact with. Navigation up and down the menu choices is done by using the \verb|UP| and \verb|DOWN| arrow keys, respectively. To select a menu choice, press the \verb|ENTER| key. When prompted, values can be entered into fields by typing the desired value followed by pressing the \verb|ENTER| key.
+
+The following is a map of the possible choices and sub-choices (note that ``\verb|Back|'' may appear in the menus - this option, when selected, will return the user to the previous menu):
+
+\begin{itemize}
+    \item \verb|1: Select Input Port|
+    \begin{itemize}
+        \item Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The input port will be swapped to whichever option is chosen.
+    \end{itemize}
+    \item \verb|2: Select Output Port|
+    \begin{itemize}
+        \item Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The output port will be swapped to whichever option is chosen.
+    \end{itemize}
+    \item \verb|3: Go to Location|
+    \begin{itemize}
+        \item \verb|Enter absolute position (current:| \emph{n} \verb|): | \{field\}
+        \item Where \emph{n} displays the current position in steps, and \{field\} is blank, allowing the entry of a desired position in steps. The instrument will move to the location entered.
+    \end{itemize}
+    \item \verb|4: Go to Wavelength|
+    \begin{itemize}
+        \item \verb|Enter target wavelength (nm) (current:| \emph{n} \verb|): | \{field\}
+        \item Where \emph{n} displays the current position in corresponding nanometers, and \{field\} is blank, allowing the entry of a desired position in nanometers. The instrument will move to the location entered.
+    \end{itemize}
+    \item \verb|5: Step Relative (steps)|
+    \begin{itemize}
+        \item \verb|Enter relative position (step, current:| \emph{n} \verb|): | \{field\}
+        \item Where \emph{n} displays the current position in steps, and \{field\} is blank, allowing the entry of a desired relative position in steps. The instrument will move the entered number of steps away from its current position (New Absolute Position = Current Absolute Position + Relative Position).
+    \end{itemize}
+    \item \verb|6: Step Relative (nm)|
+    \begin{itemize}
+        \item \verb|Enter relative position (nm, current:| \emph{n} \verb|): | \{field\}
+        \item Where \emph{n} displays the current position in corresponding nanometers, and \{field\} is blank, allowing the entry of a desired relative position in nanometers. The instrument will move the entered number of nanometers away from its current position (New Position = Current Position + Relative Position).
+    \end{itemize}
+    \item \verb|7: Update Zero Location|
+    \begin{itemize}
+        \item \verb|Enter home position (current:| \emph{n} \verb|): | \{field\}
+        \item Where \emph{n} displays the current position in steps, and \{field\} is blank, allowing the entry of a new home position in steps. The home position is the position that the instrument will treat as the zeroth step.
+    \end{itemize}
+    \item \verb|8: Scan Spectra|
+    \begin{itemize}
+        \item 1: Start
+        \begin{itemize}
+            \item Set the starting position for the next scan in nanometers.
+        \end{itemize}
+        \item 2: Stop
+        \begin{itemize}
+            \item Set the finishing position for the next scan in nanometers.
+        \end{itemize}
+        \item 3: Step
+        \begin{itemize}
+            \item Edit the step size for the next scan in steps or nanometers (must be greater than zero).
+        \end{itemize}
+        \item 4: Trigger Out Pulse
+        \begin{itemize}
+            \item Edit the trigger out pulse length for the next scan in milliseconds (see: \nameref{subsection:triggerio}).
+        \end{itemize}
+        \item 5: Trigger In Timeout
+        \begin{itemize}
+            \item Edit the trigger in timeout length for the next scanin seconds (see: \nameref{subsection:triggerio}).
+        \end{itemize}
+        \item 6: Start Scan
+        \begin{itemize}
+            \item Begins a scan using the currently set values (see: \nameref{subsubsection:statusbottomarea})
+            \item Note: When a scan is active, the text ``Info: Scanning motor is moving. Press F4, S, Q or Space to stop.'' will appear at the bottom of the screen. User interaction is disabled when this text is active.
+            \item While scanning, the test ``\verb|Saving to:|'' followed by the directory path data is currently being stored in will appear. When the scan is finished, ``\verb|Last save:|'' will indicate where data for the last scan was saved.
+        \end{itemize}
+        \item 7: Cancel Scan
+        \begin{itemize}
+            \item Halts the current scan, if one is running. Scans can also be halted by pressing the \verb|F4|, \verb|S|, \verb|Q|, or \verb|SPACEBAR| keys.
+        \end{itemize}
+    \end{itemize}
+    \item \verb|   Exit Program|
+    \begin{itemize}
+        \item Exits the program.
+    \end{itemize}
+\end{itemize}
+
+
+\section{External Interfaces} \label{section:externalinterfaces}
+
+The monochromater features multiple external interfaces, organized here by use.
+
+\subsection{Power}
+
+Power is supplied to the instrument's movement motors via a power adapter, plugged into the port labeled ``\verb|POWER/MOT|''. Power is supplied to the instrument's Raspberry Pi control computer via USB-C through the port labeled ``\verb|POWER/PI|''. 
+
+\subsubsection{Troubleshooting}
+
+The yellow LED indicator light, adjacent to the USB-C port labeled ``\verb|POWER/PI|'' will be lit if the Raspberry Pi is receiving power. If the indicator light is not lit but a live USB-C power cable is connected, the USB-C may need to be rotated 180 degrees.
+
+\subsection{Serial}
+
+A debug serial interface, connected directly to the instrument's Raspberry Pi control computer, is available via the DB25 port labeled ``\verb|SERIAL|''.
+
+\subsection{Trigger Input-Output} \label{subsection:triggerio}
+
+An input-output interface for notifying the beginning of a mid-scan movement pause (output) (see: ``Dwell" in \nameref{subsubsection:statusbottomarea}) and for triggering the end of a mid-scan movement pause (input). The length of the output pulse can be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger Out Pulse'' in \nameref{subsection:options}). The maximum time the instrument will wait to receive a trigger to end a mid-scan movement pause before automatically continuing can also be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger In Timeout'' in \nameref{subsection:options}).
+
+\subsection{Light Input-Output}
+
+The instrument has two light input ports (``\verb|INPUT PORT A|'' and ``\verb|INPUT PORT B|'') and two light output ports (``\verb|OUTPUT PORT A|'' and ``\verb|OUTPUT PORT B|'').
+
+\subsection{Position Counter}
+
+The instrument also features a rolling counter, which shows the instrument's current position in counter-steps.
+
+\end{document}
