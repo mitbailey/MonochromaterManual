@@ -1,1 +1,1 @@
-# ground_station_user_manual
+# Controller for Modified SPEX 1000M Monochromater User Manual
