@@ -101,6 +101,21 @@ The program may be started in one of three possible conditions, listed below. It
 
 If the program crashes, it is important to note that the absolute position is invalidated. Therefore, the user must reference the section \nameref{section:startingtheprogram} subsection \nameref{subsubsection:bootcon2} for information on how to proceed, and be sure to delete the \verb|posinfo.bin| file.
 
+\section{Units of Movement} \label{section:unitsofmovement}
+
+
+\subsubsection{Units}
+
+Step: The units of movement as measured by the program. Integer values from 0 to 65535.
+
+Counter-step: The units of movement displayed by the on-instrument counter.
+
+Nanometer: The amount of wavelength change induced by some amount of instrument movement.
+
+\subsubsection{Conversions}
+
+\textbf{1 counter-step} is \textbf{2 nanometers} is \textbf{250 steps}.
+
 \section{Graphical User Interface} \label{section:interface}
 
 The user interface is split horizontally into two sections: a top section, Status, and a bottom section, Options.
