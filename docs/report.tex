@@ -11,6 +11,7 @@
 \usepackage{multirow}
 \usepackage{lscape}
 \usepackage{colortbl}
+\usepackage{hanging}
 % \usepackage{titlesec}
 % \usepackage{indentfirst}
 
@@ -54,7 +55,9 @@
 \date{13 April 2022}
 
 \setcounter{tocdepth}{3}
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{3}
+
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\ref*{#1} \nameref*{#1}}}
 
 \begin{document}
 
@@ -68,16 +71,16 @@
 \section{Getting Started} \label{section:gettingstarted}
 
 \subsubsection{Running Without Installing}
-Open Terminal and navigate to the \verb|SpectroController| program directory. Run \verb|make| if the file "controller.out" is not present. The file "controller.out" should now exist in the \verb|SpectroController| directory.
+Open Terminal and navigate to the \verb|SpectroController| program directory. Run \verb|make| if the file ``controller.out'' is not present. The file ``controller.out'' should now exist in the \verb|SpectroController| directory.
 
 \subsubsection{Installing (Optional)}
 Optionally, the user may want to install the program. This can be done by executing \verb|make install| in the \verb|SpectroController| directory.
-
 
 \section{Starting the Program} \label{section:startingtheprogram}
 
 The program may be started in one of three possible conditions, listed below. It is \emph{very important} to note into which of these conditions the program is being booted. Only once the boot condition is considered, the program can be run by executing the command \verb|./controller.out| in the program directory, or by executing the command \verb|controller| anywhere if the program has been installed.
 
+\subsection{Startup / Boot Conditions} \label{subsection:startupbootconditions}
 \subsubsection{Boot Condition 1: First Time Start} \label{subsubsection:bootcon1}
 \begin{quote}
     The program is being started for the first time. In this state, the program does not know the current absolute position of the counter and will ask the user to provide this information via the statement:
@@ -89,66 +92,70 @@ The program may be started in one of three possible conditions, listed below. It
 
 \subsubsection{Boot Condition 2: After Ungraceful Exit} \label{subsubsection:bootcon2}
 \begin{quote}
-    The program is being started after an error or crash has occurred. Whatever the reason, it is important to note that the program’s knowledge of the counter position is invalidated on a crash. Therefore, the file which holds position data, `posinfo.bin`, must be deleted. The program can then be started as if in Condition 1: First Time Start.
+    The program is being started after an error or crash has occurred. Whatever the reason, it is important to note that the program’s knowledge of the counter position is invalidated on a crash. Therefore, the file which holds position data, \verb|posinfo.bin|, must be deleted. Once this is done, the program can then be started as noted in \fullref{subsubsection:bootcon1}.
 \end{quote}
 
 \subsubsection{Boot Condition 3: Normal Start} \label{subsubsection:bootcon3}
 \begin{quote} 
-    A routine startup of the program after a graceful exit and after having been through \nameref{subsubsection:bootcon1}. The program requires no special action.
+    A routine startup of the program after a graceful exit and after having been through \fullref{subsubsection:bootcon1}. The program requires no special action.
 \end{quote}
 
 \section{Ungraceful Exits and Crashes} \label{section:ungracefulexitsandcrashes}
 
-If the program crashes, it is important to note that the absolute position is invalidated. Therefore, the user must reference the section \nameref{section:startingtheprogram} subsection \nameref{subsubsection:bootcon2} for information on how to proceed, and be sure to delete the \verb|posinfo.bin| file.
+If the program crashes, it is important to note that the absolute position is invalidated. Therefore, the user must reference \fullref{subsubsection:bootcon2} for information on how to proceed, and be sure to delete the \verb|posinfo.bin| file.
 
 \section{Units of Movement} \label{section:unitsofmovement}
 
 
 \subsubsection{Units}
 
-Step: The units of movement as measured by the program. Integer values from 0 to 65535.
+Motor-step: The units of motor movement as measured by the program. Integer values from 0 to 65535.
 
 Counter-step: The units of movement displayed by the on-instrument counter.
 
-Nanometer: The amount of wavelength change induced by some amount of instrument movement.
+Nanometer: The amount of wavelength change effected by some amount of instrument movement.
 
 \subsubsection{Conversions}
 
-\textbf{1 counter-step} is \textbf{2 nanometers} is \textbf{250 steps}.
+\textbf{1 counter-step} is \textbf{2 nanometers} is \textbf{250 motor-steps}.
 
 \section{Graphical User Interface} \label{section:interface}
 
-The user interface is split horizontally into two sections: a top section, Status, and a bottom section, Options.
+The user interface is split horizontally into two sections: a top section, labeled ``Status'', and a bottom section, labeled ``Options''.
 
 \subsection{Status} \label{subsection:status}
 
-The first section, Status, is located at the top half of the screen and shows the current state of the instrument and user-entered values. This area is further split in half horizontally by a dashed (\verb|----|) line. The upper area displays values pertaining to the current physical state of the instrument, while the bottom area shows the current values which will be used during the next command.
+The first section, labeled ``Status'', is located at the top half of the screen and shows the current state of the instrument and user-entered values. This area is further split in half horizontally by a dashed (\verb|----|) line. The upper area displays values pertaining to the current physical state of the instrument, while the bottom area shows the current values which will be used during the next scan command.
+
+Note: See \fullref{section:unitsofmovement} for unit information.
 
 \subsubsection{Top Area (Current Instrument State)} \label{subsubsection:statustoparea}
 
-``\verb|Input :|'' shows which port the instrument input is set to, and may display ``\verb|PORT A|'', ``\verb|PORT B|'', or ``\verb|Moving|''. When moving is displayed, the text ``\verb|Info: IO Ports are changing. Operations disabled.|'' will appear at the bottom of the screen. This occurs when the instrument is switching between selected ports. User interaction is disabled until the switching is finished.
+\begin{hangparas}{2cm}{1}
+``\verb|Input :|'' shows which port the instrument input is set to, and may display ``\verb|PORT A|'', ``\verb|PORT B|'', or ``\verb|Moving|''. When moving is displayed, the text ``\emph{Info: IO Ports are changing. Operations disabled.}'' will appear at the bottom of the screen. This occurs when the instrument is switching between selected ports. User interaction is disabled until the switching is finished.
 
 ``\verb|Output:|'' shows which port the instrument output is set to, and may display ``\verb|PORT A|'', ``\verb|PORT B|'', or ``\verb|Moving|''.
 
 ``\verb|Scan|'' shows if the instrument is busy moving, and will display ``\verb|Ready|'' when still and ready to move and ``\verb|Scanning|'' when moving and busy.
 
-``\verb|Current|'' shows the instrument's current position. It displays the position from top to bottom as an absolute integer value from 0 to 65535 (called steps), as a fractional decimal matching the expected on-instrument counter readout (called counter-steps), and as a wavelength from 0 nanometers to 1500 nanometers. These values are updated as the position changes.
+``\verb|Current|'' shows the instrument's current position. It displays the position from top to bottom as an absolute integer value from 0 to 65535 motor-steps, as a fractional decimal matching the expected on-instrument counter readout in counter-steps, and as a wavelength from 0 nanometers to 1500 nanometers. These values are updated as the position changes.
 
-Note: 1 counter-step = 2 nanometers = 250 steps
-
-``\verb|Target|'' shows the instrument's target position, position it is currently moving to, in the same units and manner as ``\verb|Current|'' (see above).
+``\verb|Target|'' shows the instrument's target position, the position it will move to if a \verb|Go to Location| command is given (see: \fullref{subsection:options}), displayed in the same units and manner as ``\verb|Current|'' (see above).
+\end{hangparas}
 
 \subsubsection{Bottom Area (Queued Command Values)} \label{subsubsection:statusbottomarea}
 
+\begin{hangparas}{2cm}{1}
 ``\verb|Start|'' displays the position, in nanometers, the next scan will begin at. If not already here, the instrument will move here before beginning the scan.
 
 ``\verb|Stop|'' displays the position, in nanometers, the next scan will end at.
 
 ``\verb|Step|'' displays the step size, in nanometers, the next scan will use. When scanning, the instrument will move in increments of this size.
 
-``\verb|Dwell|'' displays the amount of time, in seconds, the instrument will pause movement after each step during a scan.
+``\verb|Dwell|'' displays the maximum amount of time, in seconds, the instrument will pause movement after each step during a scan. It will wait for a trigger-in pulse during this time (see: \fullref{subsection:triggerio}). If it receives a trigger-in pulse, it will immediately move to the next position in the scan. Otherwise, once the \verb|Dwell| time is reached, it will continue to the next position in the scan on its own.
 
-``\verb|Pulse|'' displays the length, in milliseconds, of the output pulse sent through the input-output trigger, a DB9 connector labeled as \verb|TRIG I/O| on the device itself (see: \nameref{section:externalinterfaces}).
+``\verb|Pulse|'' displays the length, in milliseconds, of the output pulse sent through the input-output trigger when it begins to ``dwell'', or wait after one in-scan movement. The pulse is output through the \verb|TRIG I/O| port on the device (see: \fullref{subsection:triggerio}).
+\end{hangparas}
 
 \subsection{Options} \label{subsection:options}
 
@@ -158,13 +165,13 @@ The following is a map of the possible choices and sub-choices (note that ``\ver
 
 \begin{itemize}
     \item \verb|1: Select Input Port|
-    \begin{itemize}
-        \item Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The input port will be swapped to whichever option is chosen.
-    \end{itemize}
+
+    Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The input port will be swapped to whichever option is chosen.
+
     \item \verb|2: Select Output Port|
-    \begin{itemize}
-        \item Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The output port will be swapped to whichever option is chosen.
-    \end{itemize}
+
+    Here the user is presented with the options ``\verb|Port A|'' and ``\verb|Port B|''. The output port will be swapped to whichever option is chosen.
+
     \item \verb|3: Go to Location|
     \begin{itemize}
         \item \verb|Enter absolute position (current:| \emph{n} \verb|): | \{field\}
@@ -191,42 +198,47 @@ The following is a map of the possible choices and sub-choices (note that ``\ver
         \item Where \emph{n} displays the current position in steps, and \{field\} is blank, allowing the entry of a new home position in steps. The home position is the position that the instrument will treat as the zeroth step.
     \end{itemize}
     \item \verb|8: Scan Spectra|
+    
+    Contains sub-menus pertaining to the scan functionality of the device, where the instrument will move from a start point to an end point in a given size increment.
+
     \begin{itemize}
-        \item 1: Start
-        \begin{itemize}
-            \item Set the starting position for the next scan in nanometers.
-        \end{itemize}
-        \item 2: Stop
-        \begin{itemize}
-            \item Set the finishing position for the next scan in nanometers.
-        \end{itemize}
-        \item 3: Step
-        \begin{itemize}
-            \item Edit the step size for the next scan in steps or nanometers (must be greater than zero).
-        \end{itemize}
-        \item 4: Trigger Out Pulse
-        \begin{itemize}
-            \item Edit the trigger out pulse length for the next scan in milliseconds (see: \nameref{subsection:triggerio}).
-        \end{itemize}
-        \item 5: Trigger In Timeout
-        \begin{itemize}
-            \item Edit the trigger in timeout length for the next scanin seconds (see: \nameref{subsection:triggerio}).
-        \end{itemize}
-        \item 6: Start Scan
-        \begin{itemize}
-            \item Begins a scan using the currently set values (see: \nameref{subsubsection:statusbottomarea})
-            \item Note: When a scan is active, the text ``Info: Scanning motor is moving. Press F4, S, Q or Space to stop.'' will appear at the bottom of the screen. User interaction is disabled when this text is active.
-            \item While scanning, the test ``\verb|Saving to:|'' followed by the directory path data is currently being stored in will appear. When the scan is finished, ``\verb|Last save:|'' will indicate where data for the last scan was saved.
-        \end{itemize}
-        \item 7: Cancel Scan
-        \begin{itemize}
-            \item Halts the current scan, if one is running.
-        \end{itemize}
+        \item \verb|1: Start|
+
+        Set the starting position for the next scan in nanometers.
+
+        \item \verb|2: Stop|
+
+        Set the finishing position for the next scan in nanometers.
+
+        \item \verb|3: Step|
+
+        Edit the step size for the next scan in steps or nanometers (must be greater than zero).
+
+        \item \verb|4: Trigger Out Pulse|
+
+        Edit the trigger out pulse length for the next scan in milliseconds (see: \fullref{subsection:triggerio}).
+
+        \item \verb|5: Trigger In Timeout|
+
+        Edit the trigger in timeout length for the next scanin seconds (see: \fullref{subsection:triggerio}).
+
+        \item \verb|6: Start Scan|
+        \item 
+        Begins a scan using the currently set values (see: \fullref{subsubsection:statusbottomarea})
+
+        Note: When a scan is active, the text ``Info: Scanning motor is moving. Press F4, S, Q or Space to stop.'' will appear at the bottom of the screen. User interaction is disabled when this text is active.
+
+        While scanning, the test ``\verb|Saving to:|'' followed by the directory path data is currently being stored in will appear. When the scan is finished, ``\verb|Last save:|'' will indicate where data for the last scan was saved.
+
+        \item \verb|7: Cancel Scan|
+
+        Halts the current scan, if one is running.
+
     \end{itemize}
     \item \verb|   Exit Program|
-    \begin{itemize}
-        \item Exits the program.
-    \end{itemize}
+
+    Exits the program.
+
 \end{itemize}
 
 
@@ -248,7 +260,7 @@ A debug serial interface, connected directly to the instrument's Raspberry Pi co
 
 \subsection{Trigger Input-Output} \label{subsection:triggerio}
 
-An input-output interface for notifying the beginning of a mid-scan movement pause (output) (see: ``Dwell" in \nameref{subsubsection:statusbottomarea}) and for triggering the end of a mid-scan movement pause (input). The length of the output pulse can be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger Out Pulse'' in \nameref{subsection:options}). The maximum time the instrument will wait to receive a trigger to end a mid-scan movement pause before automatically continuing can also be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger In Timeout'' in \nameref{subsection:options}).
+An input-output interface for notifying the beginning of a mid-scan movement pause (output) (see: ``Dwell" in \fullref{subsubsection:statusbottomarea}) and for triggering the end of a mid-scan movement pause (input). The length of the output pulse can be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger Out Pulse'' in \fullref{subsection:options}). The maximum time the instrument will wait to receive a trigger to end a mid-scan movement pause before automatically continuing can also be set (see: choice ``8: Scan Spectra'' subchoice ``4: Trigger In Timeout'' in \fullref{subsection:options}).
 
 \subsection{Light Input-Output}
 
